@@ -53,6 +53,16 @@ loop:
    addi x4, x4, 1
    bnez x5, loop
 
+
+    li x3, STDOUT
+    la x4, hw_data2
+
+loop2:
+   lb x5, 0(x4)
+   sb x5, 0(x3)
+   addi x4, x4, 1
+   bnez x5, loop2
+
 // Write 0xff to STDOUT for TB to terminate test.
 _finish:
     li x3, STDOUT
@@ -65,7 +75,17 @@ _finish:
 
 .global hw_data
 .data
+//.space 0x100
 hw_data:
+.ascii "----------------------------------\n"
+.ascii "Hello World from SweRV EH1 @WDC !!\n"
+.ascii "----------------------------------\n"
+.byte 0
+
+//.space 0x100
+.section .extra
+hw_data2:
+.ascii "\n"
 .ascii "----------------------------------\n"
 .ascii "Hello World from SweRV EH1 @WDC !!\n"
 .ascii "----------------------------------\n"

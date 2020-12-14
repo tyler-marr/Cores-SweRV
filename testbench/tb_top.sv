@@ -292,8 +292,8 @@ module tb_top;
     wire[63:0] WriteData;
 
 
-    assign mailbox_write = lmem.mailbox_write;
-    assign WriteData = lmem.WriteData;
+    assign mailbox_write = decoder_m.mailbox_write;
+    assign WriteData = decoder_m.WriteData;
     assign mailbox_data_val = WriteData[7:0] > 8'h5 && WriteData[7:0] < 8'h7f;
 
     parameter MAX_CYCLES = 10_000_000;
@@ -304,7 +304,7 @@ module tb_top;
         cycleCnt <= cycleCnt+1;
         // Test timeout monitor
         if(cycleCnt == MAX_CYCLES) begin
-            $display ("Hit max cycle count (%0d) .. stopping",cycleCnt);
+            $display ("Hit max cycle count (%0d)... stopping",cycleCnt);
             $finish;
         end
         // cansol Monitor
@@ -314,8 +314,8 @@ module tb_top;
         end
         // End Of test monitor
         if(mailbox_write && WriteData[7:0] == 8'hff) begin
-            $display("\nFinished : minstret = %0d, mcycle = %0d", rvtop.swerv.dec.tlu.minstretl[31:0],rvtop.swerv.dec.tlu.mcyclel[31:0]);
-            $display("See \"exec.log\" for execution trace with register updates..\n");
+            $display("\nFinished: minstret = %0d, mcycle = %0d", rvtop.swerv.dec.tlu.minstretl[31:0],rvtop.swerv.dec.tlu.mcyclel[31:0]);
+            $display("See \"exec.log\" for execution trace with register updates.\n");
             $display("TEST_PASSED");
             $finish;
         end
@@ -357,15 +357,15 @@ module tb_top;
         nmi_vector   = 32'hee000000;
         nmi_int   = 0;
 
-        $readmemh("program.hex",  lmem.mem);
+        
         $readmemh("program.hex",  imem.mem);
         tp = $fopen("trace_port.csv","w");
         el = $fopen("exec.log","w");
         $fwrite (el, "//Cycle : #inst 0  pc opcode reg regnum value\n");
         fd = $fopen("console.log","w");
         commit_count = 0;
-        preload_dccm();
-        preload_iccm();
+        //preload_dccm();
+        //preload_iccm();
 
 `ifndef VERILATOR
         if($test$plusargs("dumpon")) $dumpvars;
@@ -765,10 +765,11 @@ axi_slv #(.TAGW(`RV_IFU_BUS_TAG)) imem(
     .bid()
 );
 
-defparam lmem.TAGW =`RV_LSU_BUS_TAG;
+//defparam lmem.TAGW =`RV_LSU_BUS_TAG;
+defparam decoder_m.TAGW =`RV_LSU_BUS_TAG;
 
 //axi_slv #(.TAGW(`RV_LSU_BUS_TAG)) lmem(
-axi_slv  lmem(
+decoder  decoder_m(
     .aclk(core_clk),
     .rst_l(rst_l),
     .arvalid(lsu_axi_arvalid),
@@ -805,7 +806,7 @@ axi_slv  lmem(
     .bid(lsu_axi_bid)
 );
 `endif
-
+/*
 task preload_iccm;
 bit[31:0] data;
 bit[31:0] addr, eaddr, saddr;
@@ -814,7 +815,7 @@ bit[31:0] addr, eaddr, saddr;
 addresses:
  0xfffffff0 - ICCM start address to load
  0xfffffff4 - ICCM end address to load
-*/
+
 
 addr = 'hffff_fff0;
 saddr = {lmem.mem[addr+3],lmem.mem[addr+2],lmem.mem[addr+1],lmem.mem[addr]};
@@ -845,7 +846,7 @@ bit[31:0] addr, saddr, eaddr;
 addresses:
  0xffff_fff8 - DCCM start address to load
  0xffff_fffc - DCCM end address to load
-*/
+
 
 addr = 'hffff_fff8;
 saddr = {lmem.mem[addr+3],lmem.mem[addr+2],lmem.mem[addr+1],lmem.mem[addr]};
@@ -866,7 +867,7 @@ for(addr=saddr; addr <= eaddr; addr+=4) begin
 end
 
 endtask
-
+*/
 `define DRAM(bank) \
     rvtop.mem.Gen_dccm_enable.dccm.mem_bank[bank].dccm_bank.ram_core
 

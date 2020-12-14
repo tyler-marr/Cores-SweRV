@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 `ifdef RV_BUILD_AXI4
-module axi_slv #(TAGW=4) (
+module star_m #(TAGW=4) (
 input                   aclk,
 input                   rst_l,
 input                   arvalid,
@@ -61,7 +61,7 @@ wire mailbox_write;
 
 
 assign mailbox_write = awvalid && awaddr==MAILBOX_ADDR && rst_l;
-assign WriteData = wdata;
+assign WriteData = (wdata%'h100=='hff || wdata%'h100=='h00 || wdata%'h100=='h0A) ? wdata : wdata+1;//'h2A; //"*" but keep NL, 0xFF and 0x00
 
 always @ ( posedge aclk or negedge rst_l) begin
     if(!rst_l) begin
