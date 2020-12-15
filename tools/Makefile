@@ -67,7 +67,7 @@ includes = -I${RV_ROOT}/design/include -I${RV_ROOT}/design/lib  -I${BUILD_DIR}
 CFLAGS += "-std=c++11"
 # Optimization for better performance; alternative is nothing for slower runtime (faster compiles)
 # -O2 for faster runtime (slower compiles), or -O for balance.
-VERILATOR_MAKE_FLAGS = OPT_FAST="-O"
+VERILATOR_MAKE_FLAGS = OPT_FAST="-O0"
 
 # Targets
 all: clean verilator
@@ -88,10 +88,11 @@ verilator-build: ${TBFILES} ${BUILD_DIR}/defines.h test_tb_top.cpp
                 -I${RV_ROOT}/testbench \
 		-f ${RV_ROOT}/testbench/flist \
                 ${TBFILES} \
-                --top-module tb_top -exe test_tb_top.cpp --autoflush $(VERILATOR_DEBUG)
+                --top-module tb_top -exe test_tb_top.cpp uart_dpi.cpp --autoflush $(VERILATOR_DEBUG)
 	cp ${RV_ROOT}/testbench/test_tb_top.cpp obj_dir
+	cp ${RV_ROOT}/testbench/uart_dpi.cpp obj_dir
 	$(MAKE) -C obj_dir/ -f Vtb_top.mk $(VERILATOR_MAKE_FLAGS)
-	touch verilator-build
+	# touch verilator-build
 
 vcs-build: ${TBFILES} ${BUILD_DIR}/defines.h
 	$(VCS) -full64 -assert svaext -sverilog +error+500 \

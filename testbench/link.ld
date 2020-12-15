@@ -23,7 +23,7 @@ SECTIONS
 
   .data :
   {
-    . = ALIGN(0x00);
+    . = ALIGN(0x100);
     *(.extra*)
     STACK = ALIGN(16) + 0x8000;
   } > data
