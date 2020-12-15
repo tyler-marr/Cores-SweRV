@@ -135,7 +135,7 @@ module uart_dpi
                   output wire       int_o  // UART interrupt request
                 );
 
-   import "DPI-C" function int uart_dpi_create ( input integer  tcp_port,
+   import "DPI-C" function int uart_dpi_create ( input int      tcp_port,
                                                  input bit      listen_on_local_addr_only,
                                                  input int      transmit_buffer_size,
                                                  input int      receive_buffer_size,

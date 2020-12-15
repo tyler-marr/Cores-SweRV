@@ -20,7 +20,7 @@
 #define UART1_IRQ 2
 #define UART2_IRQ 6
 
-static const uint32_t UART1_BASE_ADDR = 0x90000000;
+static const uint32_t UART1_BASE_ADDR = 0xC0000000;
 static const uint32_t UART2_BASE_ADDR = 0x91000000;
 
 // This is how your processor accesses the 8-bit UART registers mapped into its memory space.
@@ -140,6 +140,17 @@ static void wait_for_transmit ( const uint32_t uart_base_addr )
     while ((lsr & UART_LSR_THRE) != UART_LSR_THRE);
 }
 
+static void wait_for_recieve ( const uint32_t uart_base_addr )
+{
+    unsigned char lsr;
+    
+    do
+    {
+        lsr = REG8(uart_base_addr + UART_LSR);
+    }
+    while ((lsr & UART_LSR_TEMT) != UART_LSR_TEMT);
+}
+
 
 static void uart_print ( const uint32_t uart_base_addr, const char * p )
 {
@@ -227,16 +238,18 @@ int main ( void )
         *(volatile char*)(0xd0580000) = *s;
     }
 
-    
     init_uart( UART1_BASE_ADDR );
 
-    
-    
     uart_print( UART1_BASE_ADDR, "Welcome to the UART 1, used as an echo terminal.\n" );
 
-
-    while (1)
-    REG8(UART1_BASE_ADDR + UART_TX) = '@';
+    char letter = REG8(UART1_BASE_ADDR + UART_RX);
+    while (1) {
+        letter = REG8(UART1_BASE_ADDR + UART_RX);
+        uart_print( UART1_BASE_ADDR, "The letter recieved is [");
+        //wait_for_recieve(UART1_BASE_ADDR);
+        REG8(UART1_BASE_ADDR + UART_TX) = letter;
+        uart_print( UART1_BASE_ADDR, "]\n");
+    }
 
     //*(volatile char*)(0xd0580000) = 0XFF;
     

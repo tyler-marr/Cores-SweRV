@@ -768,7 +768,7 @@ axi_slv #(.TAGW(`RV_IFU_BUS_TAG)) imem(
 defparam lmem.TAGW =`RV_LSU_BUS_TAG;
 
 //axi_slv #(.TAGW(`RV_LSU_BUS_TAG)) lmem(
-axi_slv  lmem(
+axi_bus  lmem(
     .aclk(core_clk),
     .rst_l(rst_l),
     .arvalid(lsu_axi_arvalid),
@@ -804,53 +804,6 @@ axi_slv  lmem(
     .bresp(lsu_axi_bresp),
     .bid(lsu_axi_bid)
 );
-
-
-wire[32-1:0] wb_dat_o;
-
-wire wb_we_i;
-wire wb_stb_i;
-wire wb_cyc_i;
-wire wb_ack_o;
-wire wb_err_o;
-wire[3:0]wb_sel_i;
-
-wire int_o;
-
-
-uart_dpi 
-    #(
-        .UART_DPI_ADDR_WIDTH(32),
-        // .tcp_port( 5678),
-        // .port_name("UART DPI"),
-        // .welcome_message("Welcome to the UART DPI simulated serial interface.\n\r"),
-        // .character_timeout_clk_count(100),
-        // parameter listen_on_local_addr_only = 1,
-        // parameter receive_buffer_size  = (100 * 1024),
-        // parameter transmit_buffer_size = (100 * 1024),
-
-        // parameter print_informational_messages = 1,
-        // TRACE_DATA = 0
-    )
-    uart_port
-    ( 
-        .wb_clk_i(core_clk),
-        .wb_rst_i(rst_l), // There is no need to assert reset at the beginning.
-
-        .wb_adr_i(lsu_axi_awaddr), //[UART_DPI_ADDR_WIDTH-1:0] 
-        .wb_dat_i(lsu_axi_wdata[31:0]), //[UART_DPI_DATA_WIDTH-1:0]
-        .wb_dat_o(wb_dat_o), //[UART_DPI_DATA_WIDTH-1:0]
-
-        .wb_we_i(lsu_axi_wready),
-        .wb_stb_i(wb_we_i),
-        .wb_cyc_i(wb_cyc_i),
-        .wb_ack_o(wb_ack_o),
-        .wb_err_o(wb_err_o),
-        .wb_sel_i(1), //[3:0]
-
-        .int_o(int_o)  // UART interrupt request
-    );
-
 
 `endif
 
