@@ -47,6 +47,7 @@ static const uint32_t UART2_BASE_ADDR = 0x91000000;
 // For the UART Line Status Register.
 #define UART_LSR_TEMT 0x40  /* Transmitter empty */
 #define UART_LSR_THRE 0x20  /* Transmit-hold-register empty */
+#define UART_LSR_DR   0x1   /* Data ready to read */
 
 // For the UART FIFO Control Register (16550 only)
 #define UART_FCR_ENABLE_FIFO    0x01 /* Enable the FIFO */
@@ -148,7 +149,7 @@ static void wait_for_recieve ( const uint32_t uart_base_addr )
     {
         lsr = REG8(uart_base_addr + UART_LSR);
     }
-    while ((lsr & UART_LSR_TEMT) != UART_LSR_TEMT);
+    while ((lsr & UART_LSR_DR) != UART_LSR_DR);
 }
 
 
@@ -156,7 +157,7 @@ static void uart_print ( const uint32_t uart_base_addr, const char * p )
 {
     while ( *p != 0 )
     {
-        //wait_for_transmit( uart_base_addr );
+        wait_for_transmit( uart_base_addr );
         REG8(uart_base_addr + UART_TX) = *p;
         p++;
     }
@@ -240,15 +241,24 @@ int main ( void )
 
     init_uart( UART1_BASE_ADDR );
 
-    uart_print( UART1_BASE_ADDR, "Welcome to the UART 1, used as an echo terminal.\n" );
+    //REG8(UART1_BASE_ADDR + UART_LSR) = 1;
 
-    char letter = REG8(UART1_BASE_ADDR + UART_RX);
+    unsigned char lsr;    
+    
+    //uart_print( UART1_BASE_ADDR, "Welcome to the UART 1, used as an echo terminal.\n" );
+
+    char letter = '*';
     while (1) {
-        letter = REG8(UART1_BASE_ADDR + UART_RX);
+        
         uart_print( UART1_BASE_ADDR, "The letter recieved is [");
         //wait_for_recieve(UART1_BASE_ADDR);
+        //letter = REG8(UART1_BASE_ADDR + UART_RX);
         REG8(UART1_BASE_ADDR + UART_TX) = letter;
-        uart_print( UART1_BASE_ADDR, "]\n");
+        //uart_print( UART1_BASE_ADDR, "]\n");
+
+        lsr = REG8(UART1_BASE_ADDR + UART_LSR);
+        lsr += 'A';
+        REG8(UART1_BASE_ADDR + UART_TX) = lsr;
     }
 
     //*(volatile char*)(0xd0580000) = 0XFF;
