@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+// Comment
 `ifdef RV_BUILD_AXI4
 module decoder #(TAGW=1) (
 input                   aclk,
