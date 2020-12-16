@@ -49,3 +49,7 @@ tools/codegenerators/AAPGV2/swerv/objdump/out*
 tools/sim.vcd
 testbench/ws.code-workspace
 tools/obj_dir
+tools/program.hex
+tools/trace_port.csv
+tools/*.dis
+tools/*.exe

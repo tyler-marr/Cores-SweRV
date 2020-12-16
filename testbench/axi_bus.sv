@@ -65,8 +65,8 @@ wire uart_enable;
 
 assign mailbox_write = awvalid && awaddr==MAILBOX_ADDR && rst_l;
 assign uart_enable = (
-        (awvalid && awaddr[31:28]==UART_ADDR[31:28]) ||
-        (arvalid && araddr[31:28]==UART_ADDR[31:28])
+        (awvalid && awaddr[31:28]==UART_ADDR[31:28]) 
+        // || (arvalid && araddr[31:28]==UART_ADDR[31:28])
         ) && rst_l;
 
 assign WriteData = wdata;

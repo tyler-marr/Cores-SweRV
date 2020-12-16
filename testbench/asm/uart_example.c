@@ -238,7 +238,7 @@ int main ( void )
     // - UART 1 is an echo console, it echoes everything it receives back to the client.
     // - UART 2 is only used to print informational messages.
 
-    char *str = " This was printed from within a bootloader!\n";
+    char *str = " This was printed from within a UART programe!\n";
     char *s = str;
     while (*s++) {
         *(volatile char*)(0xd0580000) = *s;
@@ -259,7 +259,7 @@ int main ( void )
         //wait_for_recieve(UART1_BASE_ADDR);
         //letter = REG8(UART1_BASE_ADDR + UART_RX);
         REG8(UART1_BASE_ADDR + UART_TX) = letter;
-        //uart_print( UART1_BASE_ADDR, "]\n");
+        uart_print( UART1_BASE_ADDR, "]\n");
 
         lsr = REG8(UART1_BASE_ADDR + UART_LSR);
         lsr += 'A';
