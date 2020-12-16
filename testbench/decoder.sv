@@ -51,7 +51,7 @@ output  [1:0]           bresp,
 output  [TAGW-1:0]      bid
 );
 
-axi_slv  lmem(
+axi_bus  lmem(
     .aclk(aclk),
     .rst_l(rst_l),
     .arvalid(w_arvalid),
@@ -162,7 +162,7 @@ star_m star(
 //     .bid(u_bid)
 // );
 
-
+/*
 uart_dpi 
     #(
         .UART_DPI_ADDR_WIDTH(32),
@@ -199,7 +199,7 @@ uart_dpi
 wire int_o;
 wire wb_ack_o;
 wire wb_err_o;
-
+*/
 parameter   MAILBOX_ADDR = 32'hd0580000;
 parameter   BOUNDARY1 = 32'h80000000;
 parameter   BOUNDARY2 = 32'hF8000000;

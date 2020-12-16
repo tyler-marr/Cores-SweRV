@@ -816,7 +816,10 @@ void uart_dpi::send_char ( const char character )
 
   assert( m_transmit_write_pointer < m_transmit_buffer_size );
   m_transmit_buffer[ m_transmit_write_pointer ] = character;
-
+  // fprintf( stderr,
+  //           "Trying to write %x\n",
+  //           character);
+  // fflush( stderr );
   ++m_transmit_write_pointer;
   m_transmit_write_pointer %= m_transmit_buffer_size;
 }
@@ -902,7 +905,10 @@ int uart_dpi_send ( const long long obj, const char character )
   try
   {
     uart_dpi * const this_obj = (uart_dpi *)obj;
-
+    // fprintf( stderr,
+    //         "Trying to write %x\n",
+    //         character);
+    // fflush( stderr );
     if ( this_obj == NULL )
       throw std::runtime_error( "Invalid obj parameter." );
 

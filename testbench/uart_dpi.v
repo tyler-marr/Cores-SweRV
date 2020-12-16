@@ -459,9 +459,9 @@ module uart_dpi
                        // the last byte received. If you need that kind of behaviour,
                        // uncomment the $finish below, and modify the code so that the last byte
                        // is remembered and returned at this point.
-                       $display( "%sThe client is trying to receive a character, but the FIFO is empty.", `UART_DPI_ERROR_PREFIX );
-                       $finish;
-                       data_to_return = 0;  // Prevents C++ compilation warning under Verilator.
+                       //$display( "%sThe client is trying to receive a character, but the FIFO is empty.", `UART_DPI_ERROR_PREFIX );
+                       //$finish;
+                       data_to_return = 8'd63;  // Prevents C++ compilation warning under Verilator.
                     end
                   else if ( 0 != uart_dpi_receive( obj, data_to_return ) )
                     begin
@@ -669,10 +669,10 @@ module uart_dpi
            wb_dat_o <= 0;
            wb_ack_o <= 0;
            wb_err_o <= 0;
-
+           //$display(wb_cyc_i, wb_stb_i, wb_ack_o, wb_err_o, wb_we_i);
            if ( wb_cyc_i  &&
                 wb_stb_i  &&
-                !wb_ack_o && // If we answered in the last cycle, finish the transaction in this one by clearing wb_ack_o.
+                //!wb_ack_o && // If we answered in the last cycle, finish the transaction in this one by clearing wb_ack_o.
                 !wb_err_o
              )
              begin
