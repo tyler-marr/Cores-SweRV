@@ -123,13 +123,13 @@ module uart_dpi
 
                   input  wire [UART_DPI_ADDR_WIDTH-1:0]  wb_adr_i,
                   input  wire [`UART_DPI_DATA_WIDTH-1:0] wb_dat_i,
-                  output reg [`UART_DPI_DATA_WIDTH-1:0] wb_dat_o,
+                  output reg  [`UART_DPI_DATA_WIDTH-1:0] wb_dat_o,
 
                   input  wire       wb_we_i,
                   input  wire       wb_stb_i,
                   input  wire       wb_cyc_i,
-                  output reg       wb_ack_o,
-                  output reg       wb_err_o,
+                  output reg        wb_ack_o,
+                  output reg        wb_err_o,
                   input  wire [3:0] wb_sel_i,
 
                   output wire       int_o  // UART interrupt request

@@ -12,6 +12,7 @@
 
 // #include <int.h>  // For int_init() and int_add() from the MinSoC project, this is platform specific.
 
+
 // --------- These definitions depend on your platform ---------
 
 #define IN_CLK         25000000  // 25 MHz, it does not matter for the UART DPI simulation.
@@ -20,11 +21,12 @@
 #define UART1_IRQ 2
 #define UART2_IRQ 6
 
-static const uint32_t UART1_BASE_ADDR = 0xC0000000;
-static const uint32_t UART2_BASE_ADDR = 0x91000000;
 
 // This is how your processor accesses the 8-bit UART registers mapped into its memory space.
 #define REG8(addr) *((volatile unsigned char *)(((uintptr_t)addr)))
+static const uint32_t UART1_BASE_ADDR = 0x18000000;
+static const uint32_t UART2_BASE_ADDR = 0x91000000;
+
 
 // -------------------------------------------------------------
 
@@ -47,7 +49,8 @@ static const uint32_t UART2_BASE_ADDR = 0x91000000;
 // For the UART Line Status Register.
 #define UART_LSR_TEMT 0x40  /* Transmitter empty */
 #define UART_LSR_THRE 0x20  /* Transmit-hold-register empty */
-#define UART_LSR_DR   0x1   /* Data ready to read */
+#define UART_LSR_DR   0x01  /* Data ready to read */
+
 
 // For the UART FIFO Control Register (16550 only)
 #define UART_FCR_ENABLE_FIFO    0x01 /* Enable the FIFO */
@@ -141,6 +144,7 @@ static void wait_for_transmit ( const uint32_t uart_base_addr )
     while ((lsr & UART_LSR_THRE) != UART_LSR_THRE);
 }
 
+
 static void wait_for_recieve ( const uint32_t uart_base_addr )
 {
     unsigned char lsr;
@@ -153,11 +157,12 @@ static void wait_for_recieve ( const uint32_t uart_base_addr )
 }
 
 
+
 static void uart_print ( const uint32_t uart_base_addr, const char * p )
 {
     while ( *p != 0 )
     {
-        wait_for_transmit( uart_base_addr );
+        // wait_for_transmit( uart_base_addr );
         REG8(uart_base_addr + UART_TX) = *p;
         p++;
     }
@@ -265,8 +270,6 @@ int main ( void )
     
     // Enable RX and TX interrupts on the UART 1. We only actually need the RX interrupt.
     REG8( UART1_BASE_ADDR + UART_IER ) = UART_IER_RDI | UART_IER_THRI;
-
-    
 
     // Forever wait for interrupts.
     for ( ; ; )

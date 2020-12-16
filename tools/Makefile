@@ -58,7 +58,7 @@ else
 endif
 
 VPATH = $(TEST_DIR) $(BUILD_DIR) $(TBDIR)
-TBFILES = $(TBDIR)/tb_top.sv $(TBDIR)/ahb_sif.sv
+TBFILES = $(TBDIR)/tb_top.sv $(TBDIR)/ahb_sif.sv $(TBDIR)/decoder.sv $(TBDIR)/star.sv
 
 defines = $(BUILD_DIR)/common_defines.vh ${RV_ROOT}/design/include/swerv_types.sv
 includes = -I${RV_ROOT}/design/include -I${RV_ROOT}/design/lib  -I${BUILD_DIR}
@@ -76,7 +76,7 @@ clean:
 	rm -rf *.log *.s *.hex *.dis *.tbl irun* vcs* simv* snapshots swerv* \
 	verilator* *.exe obj* *.o ucli.key vc_hdrs.h csrc *.csv \
 	work dataset.asdb  library.cfg
-
+#rm -rf *.log *.s *.hex *.dis *.tbl irun* vcs* simv* snapshots swerv* verilator* *.exe obj* *.o ucli.key vc_hdrs.h csrc *.csv work dataset.asdb  library.cfg
 # If define files do not exist, then run swerv.config.
 ${BUILD_DIR}/defines.h :
 	BUILD_PATH=${BUILD_DIR} ${SWERV_CONFIG} -target=$(target) $(CONF_PARAMS)
