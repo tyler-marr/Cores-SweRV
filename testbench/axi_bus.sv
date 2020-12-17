@@ -60,15 +60,23 @@ bit [7:0] mem [bit[31:0]];
 bit [63:0] memdata;
 wire [63:0] WriteData;
 wire mailbox_write;
-wire uart_enable;
 
+wire uart_enable;
+wire [31:0] uart_addr;
+wire uart_we;
+
+wire wb_ack_o;
+wire wb_err_o;
+wire [31:0]wb_dat_o;
+wire int_o;
 
 assign mailbox_write = awvalid && awaddr==MAILBOX_ADDR && rst_l;
 assign uart_enable = (
         (awvalid && awaddr[31:28]==UART_ADDR[31:28]) 
-        // || (arvalid && araddr[31:28]==UART_ADDR[31:28])
+        || (arvalid && araddr[31:28]==UART_ADDR[31:28])
         ) && rst_l;
-
+assign uart_we = awvalid && ~arvalid;
+assign uart_addr = awvalid ? {24'h0,awaddr[7:0]} : (arvalid ? {24'h0,araddr[7:0]} : 0 );
 assign WriteData = wdata;
 
 always @ ( posedge aclk or negedge rst_l) begin
@@ -79,18 +87,17 @@ always @ ( posedge aclk or negedge rst_l) begin
     else begin
         bid     <= awid;
         rid     <= arid;
-        rvalid  <= arvalid;
+        rvalid  <= (arvalid && ~uart_enable) || wb_ack_o;
         bvalid  <= awvalid;
         rdata   <= memdata;
     end
 end
 
-wire uart_enable;
-assign uart_enable = awvalid && awaddr[31:28]==UART_ADDR[31:28] && rst_l;
 
 always @ ( negedge aclk) begin
-    if(arvalid)
-        if (!uart_enable) memdata <= {mem[araddr+7], mem[araddr+6], mem[araddr+5], mem[araddr+4],
+    if(arvalid || wb_ack_o)
+        if (!wb_ack_o) 
+            memdata <= {mem[araddr+7], mem[araddr+6], mem[araddr+5], mem[araddr+4],
                             mem[araddr+3], mem[araddr+2], mem[araddr+1], mem[araddr]};
         else
             memdata <= {32'h0,wb_dat_o};
@@ -116,17 +123,6 @@ assign bresp   = 2'b0;
 assign rlast   = 1'b1;
 
 
-wire wb_we_i;
-wire wb_stb_i;
-wire wb_cyc_i;
-wire wb_ack_o;
-wire wb_err_o;
-wire [31:0]wb_dat_o;
-wire[3:0]wb_sel_i;
-
-wire int_o;
-
-
 uart_dpi 
     #(
         .UART_DPI_ADDR_WIDTH(32),
@@ -145,11 +141,11 @@ uart_dpi
         .wb_clk_i(aclk),
         .wb_rst_i(~rst_l), // There is no need to assert reset at the beginning.
 
-        .wb_adr_i({28'h0,araddr[3:0]}), //[UART_DPI_ADDR_WIDTH-1:0] 
+        .wb_adr_i(uart_addr), //[UART_DPI_ADDR_WIDTH-1:0] 
         .wb_dat_i(wdata[31:0]), //[UART_DPI_DATA_WIDTH-1:0]
         .wb_dat_o(wb_dat_o), //[UART_DPI_DATA_WIDTH-1:0]
 
-        .wb_we_i(awvalid),
+        .wb_we_i(uart_we),
         .wb_stb_i(uart_enable),
         .wb_cyc_i(1),
         .wb_ack_o(wb_ack_o),

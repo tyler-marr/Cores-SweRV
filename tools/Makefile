@@ -159,7 +159,11 @@ program.hex: $(TEST).o $(LINK)
 	$(GCC_PREFIX)-cpp -I${BUILD_DIR}  $<  > $(TEST).cpp.s
 	$(GCC_PREFIX)-as -march=rv32gc $(TEST).cpp.s -o $(TEST).o
 
-TEST_CFLAGS = -g -O3 -funroll-all-loops
+//TEST_CFLAGS = -g -O3 -funroll-all-loops
+TEST_CFLAGS = -g -O3
+#enables eaiser reading of assembly files by cuting down on 
+#reapeated instructions
+
 ABI = -mabi=ilp32 -march=rv32imc
 
 %.o : %.c ${BUILD_DIR}/defines.h

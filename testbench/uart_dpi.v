@@ -156,18 +156,18 @@ module uart_dpi
 
 
    // Register addresses, note that a few registers are actually mapped to the same address.
-   localparam UART_DPI_REG_RBR   = 0; // Receiver buffer
-   localparam UART_DPI_REG_THR   = 0; // Transmitter
-   localparam UART_DPI_REG_IER   = 1; // Interrupt enable
-   localparam UART_DPI_REG_IIR   = 2; // Interrupt identification
-   localparam UART_DPI_REG_FCR   = 2; // FIFO control
-   localparam UART_DPI_REG_LCR   = 3; // Line Control
-   localparam UART_DPI_REG_MCR   = 4; // Modem control
-   localparam UART_DPI_REG_LSR   = 5; // Line status
-   localparam UART_DPI_REG_MSR   = 6; // Modem status
-   localparam UART_DPI_REG_SCR   = 7; // Scratch register
-   localparam UART_DPI_REG_DL_LS = 0; // Divisor latch, same address as UART_DPI_REG_THR.
-   localparam UART_DPI_REG_DL_MS = 1; // Divisor latch, same address as UART_DPI_REG_IER.
+   localparam UART_DPI_REG_RBR   = (0<<3); // Receiver buffer
+   localparam UART_DPI_REG_THR   = (0<<3); // Transmitter
+   localparam UART_DPI_REG_IER   = (1<<3); // Interrupt enable
+   localparam UART_DPI_REG_IIR   = (2<<3); // Interrupt identification
+   localparam UART_DPI_REG_FCR   = (2<<3); // FIFO control
+   localparam UART_DPI_REG_LCR   = (3<<3); // Line Control
+   localparam UART_DPI_REG_MCR   = (4<<3); // Modem control
+   localparam UART_DPI_REG_LSR   = (5<<3); // Line status
+   localparam UART_DPI_REG_MSR   = (6<<3); // Modem status
+   localparam UART_DPI_REG_SCR   = (7<<3); // Scratch register
+   localparam UART_DPI_REG_DL_LS = (0<<3); // Divisor latch, same address as UART_DPI_REG_THR.
+   localparam UART_DPI_REG_DL_MS = (1<<3); // Divisor latch, same address as UART_DPI_REG_IER.
 
 
    // ---- UART registers begin.

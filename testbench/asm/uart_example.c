@@ -31,20 +31,20 @@ static const uint32_t UART2_BASE_ADDR = 0x91000000;
 // -------------------------------------------------------------
 
 // UART registers.
-#define UART_RX         0       // In:  Receive buffer (with DLAB=0)
-#define UART_TX         0       // Out: Transmit buffer (with DLAB=0)
-#define UART_DLL        0       // Out: Divisor Latch Low (with DLAB=1)
-#define UART_DLM        1       // Out: Divisor Latch High (with DLAB=1)
-#define UART_IER        1       // Out: Interrupt Enable Register
-#define UART_IIR        2       // In:  Interrupt ID Register
-#define UART_FCR        2       // Out: FIFO Control Register
-#define UART_EFR        2       // I/O: Extended Features Register
-                                // (DLAB=1, 16C660 only)
-#define UART_LCR        3       // Out: Line Control Register
-#define UART_MCR        4       // Out: Modem Control Register
-#define UART_LSR        5       // In:  Line Status Register
-#define UART_MSR        6       // In:  Modem Status Register
-#define UART_SCR        7       // I/O: Scratch Register
+#define UART_RX         (0<<3)       // In:  Receive buffer (with DLAB=0)
+#define UART_TX         (0<<3)       // Out: Transmit buffer (with DLAB=0)
+#define UART_DLL        (0<<3)       // Out: Divisor Latch Low (with DLAB=1)
+#define UART_DLM        (1<<3)       // Out: Divisor Latch High (with DLAB=1)
+#define UART_IER        (1<<3)       // Out: Interrupt Enable Register
+#define UART_IIR        (2<<3)       // In:  Interrupt ID Register
+#define UART_FCR        (2<<3)       // Out: FIFO Control Register
+#define UART_EFR        (2<<3)       // I/O: Extended Features Register
+                                     // (DLAB=1, 16C660 only)
+#define UART_LCR        (3<<3)       // Out: Line Control Register
+#define UART_MCR        (4<<3)       // Out: Modem Control Register
+#define UART_LSR        (5<<3)       // In:  Line Status Register
+#define UART_MSR        (6<<3)       // In:  Modem Status Register
+#define UART_SCR        (7<<3)       // I/O: Scratch Register
 
 // For the UART Line Status Register.
 #define UART_LSR_TEMT 0x40  /* Transmitter empty */
@@ -156,16 +156,27 @@ static void wait_for_recieve ( const uint32_t uart_base_addr )
     while ((lsr & UART_LSR_DR) != UART_LSR_DR);
 }
 
+static unsigned char uart_wait_for_char( const uint32_t uart_base_addr )
+{
+    wait_for_recieve(uart_base_addr);
+    return REG8(uart_base_addr + UART_RX);
+}
 
 
 static void uart_print ( const uint32_t uart_base_addr, const char * p )
 {
     while ( *p != 0 )
     {
-        // wait_for_transmit( uart_base_addr );
+        wait_for_transmit( uart_base_addr );
         REG8(uart_base_addr + UART_TX) = *p;
         p++;
     }
+}
+
+static void uart_put ( const uint32_t uart_base_addr, const char c )
+{
+    wait_for_transmit( uart_base_addr );
+    REG8(uart_base_addr + UART_TX) = c;
 }
 
 
@@ -244,7 +255,7 @@ int main ( void )
         *(volatile char*)(0xd0580000) = *s;
     }
 
-    init_uart( UART1_BASE_ADDR );
+    //init_uart( UART1_BASE_ADDR );
 
     //REG8(UART1_BASE_ADDR + UART_LSR) = 1;
 
@@ -254,16 +265,12 @@ int main ( void )
 
     char letter = '*';
     while (1) {
-        
-        uart_print( UART1_BASE_ADDR, "The letter recieved is [");
-        //wait_for_recieve(UART1_BASE_ADDR);
-        //letter = REG8(UART1_BASE_ADDR + UART_RX);
-        REG8(UART1_BASE_ADDR + UART_TX) = letter;
-        uart_print( UART1_BASE_ADDR, "]\n");
 
-        lsr = REG8(UART1_BASE_ADDR + UART_LSR);
-        lsr += 'A';
-        REG8(UART1_BASE_ADDR + UART_TX) = lsr;
+        uart_print( UART1_BASE_ADDR, "The letter recieved is [");
+        letter = uart_wait_for_char(UART1_BASE_ADDR);
+        uart_put( UART1_BASE_ADDR, letter );
+        uart_print( UART1_BASE_ADDR, "]\n\r");
+
     }
 
     //*(volatile char*)(0xd0580000) = 0XFF;
